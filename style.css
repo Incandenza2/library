@@ -3,6 +3,7 @@ body {
     flex-direction: column;
     align-items: center;
     margin:0;
+    background-color: rgb(47, 70, 85);
 }
 
 main {
@@ -16,23 +17,32 @@ main {
 }
 
 .newBook {
-    margin:32px;
+    margin:16px;
 }
 
 .shelf {
     display: flex;
     justify-content: start;
-    width: 1055px;
+    width: 996px;
     height:auto;
+    min-height: 206px;
+    max-height: 380px;
     flex-wrap: wrap;
     gap: 8px;
+    background-color: rgb(151, 119, 102);
+    border-style:groove;
+    border-width:10px;
+    border-color:brown;
+    padding:10px;
+    overflow: scroll;
 
 }
 
 .book {
     border-style: solid;
-    border-width: 5px;
+    border-width: 8px;
     border-color: darkslategray;
+    border-radius: 0%;
     width: 100px;
     height: 150px;
     display:flex;
@@ -40,12 +50,32 @@ main {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
+    transition: transform 0.5s;
+    text-overflow: wrap;
+    text-overflow: ellipsis;
+    background-color:cornsilk;
+}
+.book:hover {
+    transform: scale(1.05);
+}
+
+.readBorder {
+    border-color:rgb(0, 95, 8);
+}
+
+.tagArea {
+    align-self: baseline;
+    display:flex;
+    justify-content: space-between;
+    width: 100px;
 }
 
 h4 {
     margin:0px;
     align-self: center;
     text-align: center;
+    max-width:100px;
+    overflow-wrap: break-word;
 }
 
 .form {
@@ -75,15 +105,54 @@ input {
     margin: 0 0 0 8px;
 }
 
+.unread {
+    border-style:double;
+    width: 55px;
+    border-radius: 0%;
+    background-color: rgb(0, 85, 165);
+    color: white;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 2s, opacity 1.3s;
+}
+
+.unread.read {
+    border-radius: 0%;
+    background-color: rgb(0, 95, 8);
+    color: rgb(255, 255, 255);
+    visibility: hidden;
+}
+
 .removeButton {
-    align-self: end;
-    justify-self: start;
     visibility: hidden;
     background-color: darkred;
     color:white;
     border-radius: 100%;
+    opacity: 0;
+    transition: visibility 2s, opacity 1.3s;
 }
 
-.book:hover .removeButton {
+.book:hover .removeButton, .book:hover .unread {
     visibility: visible;
+    opacity: 90%
+}
+
+.detailBox {
+    display:flex;
+    flex-direction:column;
+    align-items: baseline;
+    margin: 8px;
+    padding: 8px;
+    min-width: 100px;
+    max-width: 800px;
+    width: auto;
+    height: auto;
+    gap: 4px;
+    background-color:cornsilk;
+}
+
+.detail {
+    margin: 0;
+    font-size: 20px;
+
 }

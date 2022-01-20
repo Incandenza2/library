@@ -4,6 +4,7 @@ const shelf = document.querySelector(".shelf");
 const body = document.querySelector("body");
 const main = document.querySelector("main");
 let formExists = false;
+let detailBoxExists = false;
 
 let displayedBooks = [];
 //function to set attributes on the input boxes in the form
@@ -13,6 +14,27 @@ function setAttributes(element, attributes) {
     };
 };
 
+function deleteDetailBox() {
+    let detailBox = document.querySelector(".detailBox");
+    body.removeChild(detailBox)
+    detailBoxExists = false;
+};
+
+let showDetails = function(index) {
+    let detailBox = document.createElement("div");
+    detailBox.classList.add("detailBox");
+    for (let key in displayedBooks[index]) {
+        let detail = document.createElement("p");
+        detail.classList.add("detail");
+        detail.textContent = `${key}: ${displayedBooks[index][key]}`;
+        detailBox.appendChild(detail);
+    }
+    body.appendChild(detailBox);
+    detailBox.addEventListener("click", (event) => {
+        event.stopPropagation();
+    });
+    detailBoxExists = true;
+    };  
 
 // this function will refresh to display all books each time one is added
 const showBooks = function() {
@@ -25,16 +47,50 @@ const showBooks = function() {
         let bookTitle = document.createElement("h4");
         let year = document.createElement("h4");
         bookTitle.textContent = displayedBooks[index].title;
+        if (bookTitle.textContent.length > 33) {
+            let arrayedTitle = bookTitle.textContent.split("");
+            let shortenedTitle = arrayedTitle.splice(24,77, "...");
+            bookTitle.textContent = arrayedTitle.join("");
+            console.log(arrayedTitle);
+        }
         year.textContent = displayedBooks[index].year;
+        if (year.textContent === "") {year.textContent = "-"};
         bookCard.appendChild(bookTitle);
         bookCard.appendChild(year);
-        let removeButton = document.createElement("button");
+        bookCard.addEventListener("click", (event) => { //show details button
+            if (detailBoxExists === true) {deleteDetailBox()};
+            showDetails(index);
+            event.stopPropagation();
+        });
+        let tagArea = document.createElement("div");
+        tagArea.classList.add("tagArea");
+        bookCard.prepend(tagArea);
+        let readStatus = document.createElement("button");
+        readStatus.classList.add("unread");
+        readStatus.textContent = displayedBooks[index].status;
+        tagArea.append(readStatus);
+        readStatus.addEventListener("click", (event) => { //read status button
+            if (displayedBooks[index].status === "unread" ) {
+                displayedBooks[index].status = "read";
+                readStatus.classList.toggle("read")
+                readStatus.textContent = displayedBooks[index].status;
+                bookCard.classList.toggle("readBorder");
+            } else if (displayedBooks[index].status === "read") {
+                displayedBooks[index].status = "unread";
+                readStatus.classList.toggle("read");
+                readStatus.textContent = displayedBooks[index].status;
+                bookCard.classList.toggle("readBorder");
+            }
+            event.stopPropagation();
+        });
+        let removeButton = document.createElement("button"); // remove button
         removeButton.classList.add("removeButton");
         removeButton.textContent = "x";
-        bookCard.prepend(removeButton);
-        removeButton.addEventListener("click", () => {
+        tagArea.append(removeButton);
+        removeButton.addEventListener("click", (event) => {
             displayedBooks.splice(index,1);
-            showBooks();    
+            showBooks()
+            event.stopPropagation();    
         });
 
     });
@@ -58,15 +114,15 @@ const newForm = function() {
         inputBox.appendChild(input);
     };
     form.childNodes[0].firstChild.textContent = "Enter a title:";
-    setAttributes(form.childNodes[0].lastChild, {"type": "text", "id": "title", "name": "title", "placeholder": "Ex.: Wuthering Heights"});
+    setAttributes(form.childNodes[0].lastChild, {"type": "text", "id": "title", "name": "title", "placeholder": "Ex.: Wuthering Heights", "maxlength": "100"});
     form.childNodes[1].firstChild.textContent = "Enter an author's name:";
-    setAttributes(form.childNodes[1].lastChild, {"type": "text", "id": "author", "name": "author", "placeholder": "Ex.: Emily Bronte"});
+    setAttributes(form.childNodes[1].lastChild, {"type": "text", "id": "author", "name": "author", "placeholder": "Ex.: Emily Bronte", "maxlength": "100"});
     form.childNodes[2].firstChild.textContent = "Enter a year:";
-    setAttributes(form.childNodes[2].lastChild, {"type": "text", "id": "year", "name": "year", "placeholder": "Ex.: 1847"});
+    setAttributes(form.childNodes[2].lastChild, {"type": "text", "id": "year", "name": "year", "placeholder": "Ex.: 1847", "maxlength": "8"});
     form.childNodes[3].firstChild.textContent = "Enter a number of pages:";
-    setAttributes(form.childNodes[3].lastChild, {"type": "text", "id": "pages", "name": "pages", "placeholder": "Ex.: 400"});
+    setAttributes(form.childNodes[3].lastChild, {"type": "text", "id": "pages", "name": "pages", "placeholder": "Ex.: 400", "maxlength": "50"});
     form.childNodes[4].firstChild.textContent = "Enter a comment:";
-    setAttributes(form.childNodes[4].lastChild, {"type": "text", "id": "comment", "name": "comment", "placeholder": " want to read / loved it"});
+    setAttributes(form.childNodes[4].lastChild, {"type": "text", "id": "comment", "name": "comment", "placeholder": " want to read / loved it", "maxlength": "200"});
 
 
     let submitButton = document.createElement("button");
@@ -78,9 +134,11 @@ const newForm = function() {
         let inputYear = document.querySelector("#year").value;
         let inputPages = document.querySelector("#pages").value;
         let inputComment = document.querySelector("#comment").value;
+        if ((inputTitle !== "")) {
         let book = new Book(inputTitle, inputAuthor, inputYear, inputPages, inputComment);
         console.log(book);
         displayedBooks.unshift(book);
+        };
         body.removeChild(form);
         main.classList.toggle("blur")
         formExists = false;
@@ -95,6 +153,11 @@ const newForm = function() {
     formExists = true;
 };
 
+body.addEventListener("click", (event) => {
+    deleteDetailBox();
+});
+
+
 // gives the new button its functionality
 newBook.addEventListener("click", () => {
     if (formExists === false) {
@@ -103,19 +166,24 @@ newBook.addEventListener("click", () => {
 });
 
 //the constructor for books//
-function Book(title, author, year, pages, comment) {
+function Book(title, author, year, pages, comment, status) {
     this.title = title;
     this.author = author;
     this.year = year;
     this.pages = pages;
     this.comment = comment;
-    
+    this.status = "unread";
 };
 
 
 //for style testing
-for (let i=0; i<10; i++) {
+for (let i=0; i<16; i++) {
 let book = new Book("book"+i, i, "198"+i, i, i);
 displayedBooks.push(book);
 };
+
+displayedBooks.unshift(new Book("Infinite Jest", "David Foster Wallace", "1996", "1000+", "Tough read.", "read"));
+displayedBooks.unshift(new Book("The Little Prince", "Antoine de Saint-Exupéry", "1943", "+/- 140", "For kids."));
+displayedBooks.unshift(new Book("In Search of Lost Time", "Marcel Proust", "1913–27", "so many", "Will try and read the french version"));
+
 showBooks();
