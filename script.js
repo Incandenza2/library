@@ -43,6 +43,7 @@ const showBooks = function() {
         let bookCard = document.createElement("div");
         bookCard.classList.add("book");
         bookCard.setAttribute("data", `${index}`);
+        if (displayedBooks[index].status === "read") {bookCard.classList.toggle("readBorder")};
         shelf.appendChild(bookCard);
         let bookTitle = document.createElement("h4");
         let year = document.createElement("h4");
@@ -68,6 +69,7 @@ const showBooks = function() {
         let readStatus = document.createElement("button");
         readStatus.classList.add("unread");
         readStatus.textContent = displayedBooks[index].status;
+        if (displayedBooks[index].status === "read") {readStatus.classList.toggle("read")};
         tagArea.append(readStatus);
         readStatus.addEventListener("click", (event) => { //read status button
             if (displayedBooks[index].status === "unread" ) {
@@ -81,7 +83,6 @@ const showBooks = function() {
                 readStatus.textContent = displayedBooks[index].status;
                 bookCard.classList.toggle("readBorder");
             }
-            event.stopPropagation();
         });
         let removeButton = document.createElement("button"); // remove button
         removeButton.classList.add("removeButton");
