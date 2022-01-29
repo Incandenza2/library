@@ -167,19 +167,30 @@ newBook.addEventListener("click", () => {
 });
 
 //the constructor for books//
-function Book(title, author, year, pages, comment, status) {
+/*function Book(title, author, year, pages, comment, status) {
     this.title = title;
     this.author = author;
     this.year = year;
     this.pages = pages;
     this.comment = comment;
     this.status = "unread";
-};
+};*/
+
+class Book {
+    constructor(title, author, year, pages, comment, status) {
+        this.title = title;
+        this.author = author;
+        this.year = year;
+        this.pages = pages;
+        this.comment = comment;
+        this.status = "unread";
+    }
+}
 
 
 //for style testing
 for (let i=0; i<16; i++) {
-let book = new Book("book"+i, i, "198"+i, i, i);
+let book = new Book("book"+i, i, "198"+i);
 displayedBooks.push(book);
 };
 
